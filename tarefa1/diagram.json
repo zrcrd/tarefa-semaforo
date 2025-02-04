@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "author": "Cachorrão Cenas Fortes",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-pi-pico-w",
+      "id": "pico",
+      "top": 227.25,
+      "left": -246,
+      "attrs": { "builder": "pico-sdk" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 359.15,
+      "left": -374.4,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 387.95,
+      "left": -374.4,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 416.75,
+      "left": -374.4,
+      "attrs": { "value": "330000" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 380.4,
+      "left": -485.8,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": 332.4,
+      "left": -485.8,
+      "attrs": { "color": "yellow" }
+    },
+    { "type": "wokwi-led", "id": "led3", "top": 294, "left": -485.8, "attrs": { "color": "red" } }
+  ],
+  "connections": [
+    [ "pico:GP0", "$serialMonitor:RX", "", [] ],
+    [ "pico:GP1", "$serialMonitor:TX", "", [] ],
+    [ "pico:GP11", "r1:2", "red", [ "h-76.8", "v28.8" ] ],
+    [ "pico:GP12", "r2:2", "yellow", [ "h-67.2", "v86.4" ] ],
+    [ "pico:GP13", "r3:2", "green", [ "h-57.6", "v134.4" ] ],
+    [ "r3:1", "led1:A", "green", [ "v0" ] ],
+    [ "r2:1", "led2:A", "yellow", [ "v0" ] ],
+    [ "r1:1", "led3:A", "red", [ "v0" ] ],
+    [ "pico:GND.4", "led1:C", "black", [ "h-28.85", "v38.34", "h-201.6" ] ],
+    [ "led1:C", "led2:C", "black", [ "v0", "h-28.4", "v-38.4" ] ],
+    [ "led3:C", "led2:C", "black", [ "v0", "h-28.4", "v38.4" ] ]
+  ],
+  "dependencies": {}
+}
