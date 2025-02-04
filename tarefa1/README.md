@@ -26,8 +26,8 @@ Este projeto tem como objetivo consolidar os conceitos relacionados ao controle 
 
 ## 🛠️ Componentes Utilizados
 - Raspberry Pi Pico W
-- LED Vermelho - **GPIO 15**
-- LED Amarelo - **GPIO 14**
+- LED Vermelho - **GPIO 11**
+- LED Amarelo - **GPIO 12**
 - LED Verde - **GPIO 13**
 - Resistores de 330Ω
 - Protoboard e fios jumper
