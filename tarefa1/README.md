@@ -56,13 +56,15 @@ Este projeto tem como objetivo consolidar os conceitos relacionados ao controle 
 ## 📂 Estrutura do Repositório
 O repositório contém os seguintes arquivos e pastas:
 
-- `projeto_semaforo.c` - Código-fonte principal.
-- `CMakeLists.txt` - Arquivo de configuração do CMake.
-- `pico_sdk_import.cmake` - Arquivo de configuração do SDK do Pico.
-- `.gitignore` - Configuração para ignorar arquivos no Git.
+- `tarefa1/` - Diretório contendo arquivos relacionados à primeira tarefa.
 - `.vscode/` - Configurações do Visual Studio Code.
-
-
+- `.gitignore` - Configuração para ignorar arquivos no Git.
+- `CMakeLists.txt` - Arquivo de configuração do CMake.
+- `README.md` - Documento de descrição do projeto.
+- `diagram.json` - Arquivo de diagrama do projeto.
+- `pico_sdk_import.cmake` - Arquivo de configuração do SDK do Pico.
+- `projeto_semaforo.c` - Código-fonte principal.
+- `wokwi.toml` - Arquivo de configuração para simulação no Wokwi.
 
 ## 🤝 Contribuições
 Sinta-se à vontade para contribuir com melhorias e sugestões!
@@ -72,4 +74,3 @@ Este projeto está licenciado sob a **MIT License**.
 
 ## 📧 Contato
 Entre em contato pelo e-mail: jose.s0805@ufob.edu.br
-
