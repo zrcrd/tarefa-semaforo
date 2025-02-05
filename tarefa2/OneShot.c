@@ -1,80 +1,94 @@
-#include <stdio.h>
-#include "pico/stdlib.h"
-#include "hardware/gpio.h"
-#include "hardware/timer.h"
+/*
+    Tarefa 2 - Aula sincrona 29/01 - Unidade 4 - Microcontroladores
+    Projeto de um Temporizador por um Disparo (One shot)
+    Jose Ricardo
+ */
+#include <stdio.h>        // Biblioteca padrão
+#include "pico/stdlib.h" // Biblioteca padrão do Raspberry Pi Pico para controle de GPIO, temporização e comunicação serial.
+#include "pico/time.h"  // Biblioteca para gerenciamento de temporizadores e alarmes.
 
-#define LED_BLUE 11
-#define LED_RED 12
-#define LED_GREEN 13
-#define BUTTON 5
+#define red 12      // Define o pino GPIO 12 para o LED vermelho.
+#define blue 11    // Define o pino GPIO 11 para o LED azul.
+#define green 13  // Define o pino GPIO 13 para o LED verde.
+#define button 5 // Define o pino GPIO 5 para ler o estado do botão.
 
-bool button_pressed = false;
-int state = 0; // Estado atual
+bool cicle = false;      // Indica se o ciclo de LEDs está ativo.
+int estado_atual = 1;   // Controla o estado atual dos LEDs.
+int tempo = 3000;      // Atraso de 3 segundos do temporizadorn de alarme
 
-// Callback para mudar o estado após 3 segundos
-int64_t change_state(alarm_id_t id, void *user_data) {
-    state = (state + 1) % 3; // Alterna entre 0, 1 e 2
-    
-    // Define os LEDs conforme o estado
-    switch (state) {
-        case 0:
-            gpio_put(LED_BLUE, 1);
-            gpio_put(LED_RED, 1);
-            gpio_put(LED_GREEN, 1);
-            break;
+// Inicializa os pinos dos leds
+void iniciar_leds() {
+    gpio_init(red);
+    gpio_set_dir(red, GPIO_OUT);
+    gpio_init(blue);
+    gpio_set_dir(blue, GPIO_OUT);
+    gpio_init(green);
+    gpio_set_dir(green, GPIO_OUT);
+}
+
+// Função para ligar todos os leds
+// Os leds poderão ser acionados com a estrutura state(b,r,g);
+void state(bool b, bool r, bool g) {
+    gpio_put(blue, b);
+    gpio_put(red, r);
+    gpio_put(green, g);
+}
+
+//Função para inicializar o botão
+void iniciar_botao() {
+    gpio_init(button);
+    gpio_set_dir(button, GPIO_IN);
+    gpio_pull_up(button);  // Ativa o resistor pull-up interno
+}
+
+void verifica_estado() {
+    switch (estado_atual) {
         case 1:
-            gpio_put(LED_BLUE, 1);
-            gpio_put(LED_RED, 1);
-            gpio_put(LED_GREEN, 0);
+            state(1,1,1);
             break;
         case 2:
-            gpio_put(LED_BLUE, 0);
-            gpio_put(LED_RED, 1);
-            gpio_put(LED_GREEN, 1);
+            state(0,1,1);
             break;
+        case 3:
+            state(0,0,1);
+            break;
+        case 4:
+            state(0,0,0);
+            break;
+}}
+
+// Função de callback para mudar o estado dos LEDs a cada 3 segundos
+int64_t turn_off_callback(alarm_id_t id, void *user_data) {
+    estado_atual++;  // Muda para o próximo estado dos LEDs
+    if (estado_atual > 4) {
+        cicle = false;  // Permite que o botão funcione novamente quando todos os LEDs estiverem apagados
+        return 0; // O alarme não se repete
     }
-    
-    // Agenda a próxima transição se o botão ainda estiver pressionado
-    add_alarm_in_ms(3000, change_state, NULL, false);
+    verifica_estado();  // Atualiza os LEDs para o próximo estado
+    add_alarm_in_ms(tempo, turn_off_callback, NULL, false);  // Reagenda o alarme para 3 segundos
     return 0;
 }
 
-// Callback do botão
-void button_callback(uint gpio, uint32_t events) {
-    if (!button_pressed) {
-        button_pressed = true;
-        state = 0; // Reinicia o ciclo
-        
-        // Liga todos os LEDs
-        gpio_put(LED_BLUE, 1);
-        gpio_put(LED_RED, 1);
-        gpio_put(LED_GREEN, 1);
-        
-        // Inicia a transição de estados
-        add_alarm_in_ms(3000, change_state, NULL, false);
-    }
-}
-
 int main() {
-    stdio_init_all();
+    // Inicializa os pinos dos LEDs
+    iniciar_leds();
+    // Inicializa o pino do botão
+    iniciar_botao();
 
-    // Inicializa LEDs e botão
-    gpio_init(LED_BLUE);
-    gpio_init(LED_RED);
-    gpio_init(LED_GREEN);
-    gpio_init(BUTTON);
+    while (true) {
+        // Verifica se o botão foi pressionado e os LEDs estão apagados
+        if (gpio_get(button) == 0 && !cicle) {
+            sleep_ms(50);  // Debounce
 
-    gpio_set_dir(LED_BLUE, GPIO_OUT);
-    gpio_set_dir(LED_RED, GPIO_OUT);
-    gpio_set_dir(LED_GREEN, GPIO_OUT);
-    gpio_set_dir(BUTTON, GPIO_IN);
-    gpio_pull_up(BUTTON);
+            // Verifica novamente o estado do botão após o debounce
+            if (gpio_get(button) == 0) {
+                cicle = true;  // Marca que o ciclo dos LEDs começou
+                estado_atual = 1;   // Inicia o ciclo de LEDs com todos acesos
+                verifica_estado();   // Atualiza os LEDs para o primeiro estado
+                add_alarm_in_ms(tempo, turn_off_callback, NULL, false);  // Inicia o temporizador de 3 segundos
+        }}
 
-    // Configura interrupção no botão
-    gpio_set_irq_enabled_with_callback(BUTTON, GPIO_IRQ_EDGE_FALL, true, &button_callback);
-
-    // Loop principal
-    while (1) {
-        sleep_ms(1000);
+        sleep_ms(10);  // Pequeno atraso para reduzir o uso da CPU
     }
+    return 0;
 }
