@@ -61,7 +61,7 @@ O repositório contém os seguintes arquivos e pastas:
 - `CMakeLists.txt` - Arquivo de configuração do CMake.  
 - `README.md` - Documento de descrição do projeto.  
 - `pico_sdk_import.cmake` - Arquivo de configuração do SDK do Pico.  
-- `projeto_oneshot.c` - Código-fonte principal.  
+- `oneshot.c` - Código-fonte principal.  
 - `wokwi.toml` - Arquivo de configuração para simulação no Wokwi.  
 
 ## 🤝 Contribuições
